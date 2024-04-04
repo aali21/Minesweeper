@@ -25,6 +25,12 @@ public class Board {
         }
     }
 
+
+    // method to get cell location (as was being repeated many times)
+    public Cell getCell(int row, int col) {
+        return cells[row][col];
+    }
+
     // randomly place mines on the board
     private void placeMines() {
         Random random = new Random();
@@ -36,8 +42,8 @@ public class Board {
             int row = random.nextInt(height);
             int col = random.nextInt(width);
 
-            if (!cells[row][col].isMine()) { // if there is no mine at the location
-                cells[row][col].setMine(true); // set (place) a mine at that location
+            if (!getCell(row, col).isMine()) { // if there is no mine at the location
+                getCell(row, col).setMine(true); // set (place) a mine at that location
                 minesPlaced++;
             }
         }
@@ -72,9 +78,28 @@ public class Board {
 
     // Method to print the board (for debugging)
     public void printBoard() {
+        System.out.println("----Minesweeper Game----");
+
+        // Print the x-axis labels
+        System.out.print("    "); // Adjust for y-axis label space
+        for (int i = 0; i < width; i++) {
+            System.out.print(i + " "); // Print each x-axis label
+        }
+        System.out.println(); // New line after printing x-axis labels
+
+        // Print a dashed line under the x-axis labels for separation
+        System.out.print("   "); // Alignment for the starting point of the dashed line
+        for (int i = 0; i < width; i++) {
+            System.out.print("--"); // Dashed line under x-axis labels
+        }
+        System.out.println(); // New line after the dashed line
+
         for (int i = 0; i < height; i++) {
+            // Print the y-axis label for the current row
+            System.out.print(i + "   "); // Ensure this aligns with your grid's indentation
             for (int j = 0; j < width; j++) {
-                Cell cell = cells[i][j]; // defining cell as cells[i][j] so we dont have to keep using it
+                Cell cell = cells[i][j]; // defining cell as cells[i][j] (with the method getCell
+                // so we dont have to keep using it
                 if (cell.isFlagged()) {
                     System.out.print("F "); // Flagged cell
 
@@ -90,6 +115,19 @@ public class Board {
         }
     }
 
+    /* Method to reveal all mines on the board, this method is to be used in revealCell
+    method when 1 mine is revealed (i.e game over) */
+    private void revealAllMines() {
+        // loop through each row
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) { // in each row loop through each of the columns
+                Cell cell = getCell(r,c); // get the cell we're currently on
+                if (cell.isMine()) { // check if its a mine and reveal if it is
+                    cell.reveal();
+                }
+            }
+        }
+    }
     // Method to reveal cell
     public boolean revealCell(int row, int col) {
 
@@ -109,7 +147,8 @@ public class Board {
         cell.reveal(); // reveal this cell
 
 
-        if (cell.isMine()) {
+        if (cell.isMine()) { // if the revealed cell is a mine
+            revealAllMines(); //calling revealAllMines method defined above -> to reveal all the mines on the board
             return false; //Game over
         } else if (cell.getAdjacentMines() == 0) {
             // if no adjacent mines, recursively reveal all adjacent cells
@@ -140,7 +179,8 @@ public class Board {
         // Check if all non-mine cells are revealed
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                Cell cell = cells[i][j];
+                Cell cell = getCell(i,j);
+
                 if (!cell.isMine() && !cell.isRevealed()) {
                     return false;
                 }

@@ -58,6 +58,11 @@ public class Game {
                     isGameOver = true; // game over as mine revealed
                 }
             } else if ("f".equalsIgnoreCase(command)) {
+                Cell cell = board.getCell(row,col);
+                if (cell.isRevealed()) {
+                    System.out.println("Cannot flag a revealed cell. Try again.");
+                    continue; //skip rest of the loops iteration
+                }
                 board.flagCell(row, col);
             } else {
                 System.out.println("Invalid command, try again. (Can only use 'r' or 'f')");
@@ -73,7 +78,7 @@ public class Game {
         scanner.close();
         }
     public static void main(String[] args) {
-        Game game = new Game(9, 9, 10); // Example: 4x4 board with 3 mines
+        Game game = new Game(8, 8, 7); // Example: 4x4 board with 3 mines
         game.start();
     }
 }
